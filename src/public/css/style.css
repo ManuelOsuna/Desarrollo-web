@@ -61,7 +61,7 @@ body.sistema {
 
 /* Estilos para el formulario */
 .formulario {
-    padding: 150px 100px; /* Espaciado interno */
+    padding: 100px 50px; /* Espaciado interno */
     width: 50%; /* Ocupa la otra mitad del contenedor */
     text-align: center; /* Centra el contenido */
     background-color: #fff; /* Fondo blanco */

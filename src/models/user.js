@@ -9,6 +9,7 @@ const { Schema } = mongoose;
 
 // Definimos el esquema del usuario
 const userSchema = new Schema({
+    name: String,   // campo para almacenar el nombre
     email: String,  // Campo para almacenar el correo del usuario
     password: String // Campo para almacenar la contraseña cifrada del usuario
 });
