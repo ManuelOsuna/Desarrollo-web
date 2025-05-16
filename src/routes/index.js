@@ -6,11 +6,34 @@ const router = express.Router();
 // Importamos Passport para la autenticación de usuarios
 const passport = require('passport');
 
+// Importamos productos para su uso
+const Producto = require('../models/producto');
+
+
 // Ruta para la página principal (Home)
 router.get('/', (req, res, next) => {
-    res.render('index'); // Renderiza la vista 'index.ejs' o 'index.pug'
+    res.render('index'); // Renderiza la vista 'index.ejs'
 });
 
+// Ruta para la página de ventas
+router.get('/ventas', (req, res, next) => {
+    res.render('ventas'); // Renderiza la vista 'ventas.ejs'
+});
+
+// Ruta para la página de productos
+router.get('/productos', async (req, res) => {
+    try {
+      const productos = await Producto.find({ activo: true });
+      console.log('Productos encontrados:', productos); // <<<<< Agrega esto
+  
+      res.render('productos', { productos });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error al obtener productos');
+    }
+  });
+  
+  
 // Ruta para mostrar el formulario de registro (signup)
 router.get('/signup', (req, res, next) => {
     res.render('signup'); // Renderiza la vista 'signup.ejs'
