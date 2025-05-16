@@ -33,6 +33,7 @@ passport.use('local-signup', new LocalStrategy({
     } else {
         // Si el usuario no existe, creamos uno nuevo
         const newUser = new User();
+        newUser.name = req.body.name;
         newUser.email = email;
         newUser.password = newUser.encryptPassword(password); // Ciframos la contraseña antes de guardarla
         await newUser.save(); // Guardamos el usuario en la base de datos
