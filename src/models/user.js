@@ -11,7 +11,11 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
     name: String,   // campo para almacenar el nombre
     email: String,  // Campo para almacenar el correo del usuario
-    password: String // Campo para almacenar la contraseña cifrada del usuario
+    password: String, // Campo para almacenar la contraseña cifrada del usuario
+    rol: { type: String, enum: ['admin', 'vendedor', 'supervisor'], required: true },  // Roles posibles
+    telefono: { type: String },                         // Teléfono (opcional)
+    fecha_ingreso: { type: Date, default: Date.now },   // Fecha de ingreso, por defecto es la fecha actual
+    activo: { type: Boolean, default: true }            // Campo para indicar si el usuario está activo (por defecto, verdadero)
 });
 
 // Método para cifrar la contraseña antes de guardarla en la base de datos
@@ -27,4 +31,4 @@ userSchema.methods.comparePassword = function(password) {
 };
 
 // Exportamos el modelo 'usuarios', basado en el esquema definido
-module.exports = mongoose.model('usuarios', userSchema);
+module.exports = mongoose.model('Usuario', userSchema, 'usuarios');

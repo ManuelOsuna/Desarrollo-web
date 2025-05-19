@@ -9,22 +9,25 @@ const passport = require('passport');
 // Importamos productos para su uso
 const Producto = require('../models/producto');
 
+// Importamos ventas para su uso
+const Venta = require('../models/venta');
+
+// Importamos clientes para su uso
+const Cliente = require('../models/cliente');
+
+// Importamos clientes para su uso
+const Usuario = require('../models/user');
 
 // Ruta para la página principal (Home)
 router.get('/', (req, res, next) => {
     res.render('index'); // Renderiza la vista 'index.ejs'
 });
 
-// Ruta para la página de ventas
-router.get('/ventas', (req, res, next) => {
-    res.render('ventas'); // Renderiza la vista 'ventas.ejs'
-});
-
-// Ruta para la página de productos
+// Ruta para la página de productos encontrados
 router.get('/productos', async (req, res) => {
     try {
       const productos = await Producto.find({ activo: true });
-      console.log('Productos encontrados:', productos); // <<<<< Agrega esto
+     
   
       res.render('productos', { productos });
     } catch (error) {
@@ -32,7 +35,17 @@ router.get('/productos', async (req, res) => {
       res.status(500).send('Error al obtener productos');
     }
   });
-  
+
+  // Ruta para la página de ventas encontradas
+router.get('/ventas', async (req, res) => {
+    try {
+      const ventas = await Venta.find().populate('user_id', 'name');
+      res.render('ventas', { ventas });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error al obtener ventas');
+    }
+  });
   
 // Ruta para mostrar el formulario de registro (signup)
 router.get('/signup', (req, res, next) => {
@@ -83,6 +96,118 @@ function isAuthenticated(req, res, next) {
     res.redirect('/'); // Si no está autenticado, redirige a la página principal
 }
 
+// Mostrar formulario de agregar producto
+router.get('/nuevo-producto', isAuthenticated, (req, res) => {
+    res.render('nuevo-producto');
+});
+
+router.post('/productos', async (req, res) => {
+    try {
+      const nuevoProducto = new Producto({
+        nombre: req.body.nombre,
+        marca: req.body.marca,
+        modelo: req.body.modelo,
+        precio: req.body.precio,
+        stock: req.body.stock,
+        categoria: req.body.categoria,
+        descripcion: req.body.descripcion,
+        activo: req.body.activo === 'true',
+        imagen: req.body.imagen,
+        fecha_ingreso: req.body.fecha_ingreso
+      });
+  
+      await nuevoProducto.save();
+      res.redirect('/productos');
+    } catch (error) {
+      console.error('Error al guardar producto:', error);
+      res.status(500).send('Error interno del servidor');
+    }
+  });
+
+  
+// Mostrar formulario de agregar venta
+router.get('/nueva-venta', async (req, res) => {
+    try {
+      const clientes = await Cliente.find({});
+      const productos = await Producto.find({});
+      const vendedores = await Usuario.find({ rol: 'vendedor', activo: true });
+      const ventas = await Venta.find({});
+  
+      res.render('nueva-venta', {
+        clientes,
+        productos,
+        vendedores,
+        ventas
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error al cargar los datos');
+    }
+  });
+
+
+// Guardar nueva venta con validación de stock
+router.post('/ventas', async (req, res) => {
+    try {
+      const productosDisponibles = await Producto.find();
+
+      const clienteDB = await Cliente.findById(req.body.cliente);
+      const productosForm = req.body.productos || [];
+  
+      const productosVenta = [];
+  
+      for (let i = 0; i < productosForm.length; i++) {
+        const producto = await Producto.findById(productosForm[i].id);
+  
+        const cantidadSolicitada = parseInt(productosForm[i].cantidad);
+  
+        if (!producto) {
+          return res.status(400).send(`Producto no encontrado: ID ${productosForm[i].id}`);
+        }
+  
+        //Validar stock disponible
+        if (producto.stock < cantidadSolicitada) {
+          return res.status(400).send(`Stock insuficiente para el producto "${producto.nombre}". Solo hay ${producto.stock} unidades.`);
+        }
+  
+        productosVenta.push({
+            producto_id: producto._id,
+            nombre: producto.nombre,
+            precio_unitario: producto.precio,
+            cantidad: cantidadSolicitada,
+            subtotal: producto.precio * cantidadSolicitada  // <-- calculamos subtotal aquí
+          });
+  
+        //Descontar del stock
+        producto.stock -= cantidadSolicitada;
+        await producto.save();
+      }
+  
+      const nuevaVenta = new Venta({
+        fecha: req.body['fecha-venta'],
+        cliente: {
+          nombre: clienteDB.nombre,
+          documento: clienteDB.documento,
+          telefono: clienteDB.telefono,
+          direccion: clienteDB.direccion
+        },
+        productos: productosVenta,
+        metodo_pago: req.body['metodo-pago'],
+        estado: req.body.estado,
+        observaciones: req.body.descripcion,
+        user_id: req.body.vendedor,
+        activo: true
+      });
+  
+      await nuevaVenta.save();
+      res.redirect('/ventas');
+    } catch (err) {
+      console.error('Error al guardar la venta:', err);
+      res.status(500).send('Error interno al guardar la venta');
+    }
+  });
+  
+  
 
 // Exportamos el enrutador para que pueda ser utilizado en el servidor principal
 module.exports = router;

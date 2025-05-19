@@ -10,7 +10,8 @@ const productoSchema = new mongoose.Schema({
   categoria: String,
   descripcion: String,
   activo: { type: Boolean, default: true },
-  imagen: String
+  imagen: String,
+  fecha_ingreso: String
 }, {
   timestamps: true
 });

@@ -23,7 +23,7 @@ app.set('port', process.env.PORT || 3000); // Definimos el puerto en el que se e
 // Middlewares
 app.use(express.static('src/public')); // Servimos archivos estáticos desde la carpeta 'public'
 app.use(morgan('dev')); // Usamos Morgan en modo desarrollo para ver las peticiones en la consola
-app.use(express.urlencoded({ extended: false })); // Permite recibir datos de formularios en formato URL-encoded
+app.use(express.urlencoded({ extended: true })); // Permite recibir datos de formularios en formato URL-encoded
 
 // Configuración de la sesión
 app.use(session({
