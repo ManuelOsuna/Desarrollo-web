@@ -1,5 +1,6 @@
 <%- layout('layouts/sistema.ejs') %>
-
+<div id="layoutSidenav_content">
+<main>
 <div class="container mt-5">
   <div class="container-fluid px-4">
     <h1 class="mt-4">Caja</h1>
@@ -17,9 +18,9 @@
           
           <div class="row mb-3">
             <div class="col-md-4">
-              <label for="fecha-venta" class="form-label">Fecha de Venta</label>
-              <input type="date" class="form-control" id="fecha-venta" name="fecha-venta" required>
-            </div>
+                <label for="fecha-venta" class="form-label">Fecha de Venta</label>
+                <input type="date" class="form-control" id="fecha-venta" name="fecha-venta" readonly>
+              </div>
             <div class="col-md-4">
               <label for="cliente" class="form-label">Cliente</label>
               <select id="cliente" name="cliente" class="form-control" required>
@@ -80,8 +81,16 @@
     </div>
   </div>
 </div>
-
+</main>
 <script>
-    window.productos = <%- JSON.stringify(productos) %>;
-  </script>
-  <script src="/js/script-venta-producto.js"></script>
+// Establecer la fecha de hoy automáticamente
+const hoy = new Date();
+const yyyy = hoy.getFullYear();
+const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+const dd = String(hoy.getDate()).padStart(2, '0');
+document.getElementById('fecha-venta').value = `${yyyy}-${mm}-${dd}`;
+</script>
+<script>
+  window.productos = <%- JSON.stringify(productos) %>;
+</script>
+<script src="/js/script-venta-producto.js"></script>

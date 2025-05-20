@@ -52,7 +52,16 @@
                             <td><%= p.descripcion %></td>
                             <td>$<%= p.precio.toFixed(2) %></td>
                             <td><%= p.stock %></td>
-                            <td><%= p.fecha_ingreso %></td>
+                          <!-- Mostrar el la feha con formato en español -->
+                          <td><%= new Date(p.fecha_ingreso).toLocaleString('es-MX', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                          }) %>
+                        </td>
                             <td class="text-center">
                               <div class="btn-group btn-group-sm" role="group">
                                 <a href="/productos/editar/<%= p._id %>" class="btn btn-outline-dark" title="Editar">
@@ -74,14 +83,3 @@
           </div>
       </div>
   </main>
-  <footer class="py-4 bg-light mt-auto">
-    <div class="container-fluid px-4">
-        <div class="d-flex align-items-center justify-content-between small">
-            <div class="text-muted">Copyright &copy; RedSin 2025</div>
-            <div>
-            </div>
-        </div>
-    </div>
-</footer>
-</div>
-</div>

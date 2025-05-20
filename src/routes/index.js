@@ -73,10 +73,54 @@ router.post('/signin', passport.authenticate('local-signin', {
     passReqToCallback: true // Permite pasar la solicitud a la estrategia de autenticación
 }));
 
-// Ruta para la página de perfil, solo accesible si el usuario está autenticado
-router.get('/profile', isAuthenticated, (req, res, next) => {
-    res.render('profile'); // Renderiza la vista 'profile.ejs'
+// Ruta para la página de perfil, y script de fecha para la manipulacion de fechas
+router.get('/profile', async (req, res) => {
+  try {
+    // Obtener la fecha de inicio (hoy a las 00:00:00)
+    const ahora = new Date();
+    const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+
+    // Obtener la fecha de mañana (mañana a las 00:00:00)
+    const mañana = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate() + 1);
+
+    // Buscar ventas del día actual que estén activas
+    const ventasHoy = await Venta.find({
+      fecha: { $gte: hoy, $lt: mañana },
+      activo: true
+    });
+
+    // Calcular total vendido hoy
+    const totalHoy = ventasHoy.reduce((sum, venta) => sum + venta.total, 0);
+
+    // Número de ventas realizadas hoy
+    const totalVentas = ventasHoy.length;
+
+    // Método de pago más usado
+    const metodoMasUsado = (() => {
+      const contador = {};
+      for (const venta of ventasHoy) {
+        const metodo = venta.metodo_pago || 'Desconocido';
+        contador[metodo] = (contador[metodo] || 0) + 1;
+      }
+      const ordenado = Object.entries(contador).sort((a, b) => b[1] - a[1]);
+      return ordenado[0]?.[0] || 'N/A';
+    })();
+
+    // Renderizar vista con datos dinámicos
+    res.render('profile', {
+      totalHoy,
+      totalVentas,
+      metodoMasUsado
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al cargar el dashboard');
+  }
 });
+
+
+
 
 // Ruta para cerrar sesión
 router.get('/logout', (req, res, next) => {
@@ -113,7 +157,7 @@ router.post('/productos', async (req, res) => {
         descripcion: req.body.descripcion,
         activo: req.body.activo === 'true',
         imagen: req.body.imagen,
-        fecha_ingreso: req.body.fecha_ingreso
+        fecha_ingreso: new Date()
       });
   
       await nuevoProducto.save();
@@ -184,7 +228,7 @@ router.post('/ventas', async (req, res) => {
       }
   
       const nuevaVenta = new Venta({
-        fecha: req.body['fecha-venta'],
+        fecha: new Date(),
         cliente: {
           nombre: clienteDB.nombre,
           documento: clienteDB.documento,

@@ -11,7 +11,7 @@ const productoSchema = new mongoose.Schema({
   descripcion: String,
   activo: { type: Boolean, default: true },
   imagen: String,
-  fecha_ingreso: String
+  fecha_ingreso: Date
 }, {
   timestamps: true
 });
