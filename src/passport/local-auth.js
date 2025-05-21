@@ -36,6 +36,7 @@ passport.use('local-signup', new LocalStrategy({
         newUser.name = req.body.name;
         newUser.email = email;
         newUser.password = newUser.encryptPassword(password); // Ciframos la contraseña antes de guardarla
+        newUser.rol = "vendedor";
         await newUser.save(); // Guardamos el usuario en la base de datos
         done(null, newUser); // Autenticamos al usuario y lo guardamos en la sesión
     }
