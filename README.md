@@ -39,7 +39,8 @@ La aplicación permite:
 1. Clona este repositorio.
 2. Navega al directorio del proyecto.
 3. Ejecuta en la terminal `npm install` para instalar las dependencias.
-4. Ejecuta en la terminal `npm install -d nodemon` para instalar la dependencia de desarrollo. 
+4. Ejecuta en la terminal `npm install -d nodemon` para instalar la dependencia de desarrollo.
+5. Ejecuta en la termianl `npm install dotenv` para que permita agregar las variables de entorno.
 
 ---
 
