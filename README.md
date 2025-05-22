@@ -1,5 +1,5 @@
 
-# 🗂️ Sistema punto de venta para la materia de desarrollo web
+# 🗂️ RedSin POS
 
 ## 📘 Información del Proyecto
 
@@ -31,6 +31,22 @@ La aplicación permite:
 - contiene un panel de control principal donde se muestra el total de ventas diarias el tipo de pago con mayor frecuencia y la cantidad de ventas en el dia.
 - nos permite ver el total de inventario y el total de las ventas en un tabla de visualizacion
 - el sistema es responsivo por lo que se ajusta a cualquier dispositivo movil
+
+---
+
+## ⚙️ Instalación
+
+1. Clona este repositorio.
+2. Navega al directorio del proyecto.
+3. Ejecuta en la terminal `npm install` para instalar las dependencias.
+4. Ejecuta en la terminal `npm install -d nodemon` para instalar la dependencia de desarrollo. 
+
+---
+
+## 📖 Uso
+
+- Ejecuta `npm run dev` para iniciar el servidor en modo de desarrollo.
+- Accede a `http://localhost:3000` en tu navegador para ver la aplicación.
 
 ---
 
